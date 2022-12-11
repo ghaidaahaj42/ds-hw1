@@ -182,8 +182,8 @@ class AVLTreeList(object):
 
 
 	def getsize(self):
-		if root is None: return 0
-		return root.size
+		if self.root is None : return 0
+		return self.root.size
 
 	def calcSize(self):
 		def size_rec(node1):
@@ -205,8 +205,17 @@ class AVLTreeList(object):
 	@rtype: str
 	@returns: the the value of the i'th item in the list
 	"""
+
+	def retrieveRec(self, i):
+		if(self.root.rank==i) : return self.root.value
+		if(self.root.rank>i)  : return self.root.left.retrieveRec(i)
+		return self.root.right.retrieveRec(i)
 	def retrieve(self, i):
-		return None
+
+		return self.retrieveRec(i+1)
+
+
+
 
 	"""inserts val at position i in the list
 
@@ -313,3 +322,6 @@ class AVLTreeList(object):
 		return self.root
 
 
+import sys
+
+print("User Current Version:-", sys.version)

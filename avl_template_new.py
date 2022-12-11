@@ -26,7 +26,8 @@ class AVLNode(object):
 
 	def setRank(self,rank):
 		self.rank=rank
-
+	def getRank(self):
+		return self.rank
 	# def size(self):
 	# 	size = 0
 	# 	if self != None:
@@ -207,8 +208,8 @@ class AVLTreeList(object):
 	"""
 
 	def retrieveRec(self, i):
-		if(self.root.rank==i) : return self.root.value
-		if(self.root.rank>i)  : return self.root.left.retrieveRec(i)
+		if(self.root.getRank==i) : return self.root.value
+		if(self.root.getRank>i)  : return self.root.left.retrieveRec(i)
 		return self.root.right.retrieveRec(i)
 	def retrieve(self, i):
 

@@ -20,24 +20,13 @@ class AVLNode(object):
 		self.right = None
 		self.parent = None
 		self.height = -1
-		self.rank=0
+		self.rank = 0
 		self.size=0
-
 
 	def setRank(self,rank):
 		self.rank=rank
 	def getRank(self):
 		return self.rank
-	# def size(self):
-	# 	size = 0
-	# 	if self != None:
-	# 		size += 1
-	# 		if self.left != None:
-	# 			size +=  self.left.size()
-	# 		if self.right != None:
-	# 			size += self.right.size()
-	# 	return size
-
 	def setSize(self,s):
 		self.size=s
 
@@ -139,6 +128,23 @@ class AVLNode(object):
 			return False
 		return True
 
+	def predecessor(self):
+		return
+	def minNode(self):
+		current = self
+		while(current.left!=None):
+			current=current.left
+		return current
+	def successor(self):
+		x=self
+		if x.right != None:
+			return minNode(x.right)
+		y=self.parent
+		while(y!=None and x == y.right):
+			x=y
+			y=x.parent
+		return y
+
 
 
 """
@@ -170,7 +176,7 @@ class AVLTreeList(object):
 		counter = 0
 		current = self.root
 		while current is not None and not (current.value == v):
-			if current.vlaue > v :
+			if current.value> v :
 				current = current.left
 			else:
 				counter += current.getsize(current.left) + 1
@@ -179,6 +185,17 @@ class AVLTreeList(object):
 			counter += current.getsize(current.left) + 1
 			current.setRank(counter)
 		current.setRank(counter)
+
+	def findRank(self,i):                        ## return the node of rank i
+		current = self.root
+		while(current.getRank != i):
+			if(i>current.getRank):
+				current=current.right
+			else:
+				current=current.left
+		return current
+
+
 
 
 
@@ -229,6 +246,23 @@ class AVLTreeList(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 	def insert(self, i, val):
+		current = self.root
+		if(i==self.size):
+			while(current.right!=None):
+				current=current.right
+			s=AVLNode(val)
+			s.setParent(current)
+			current.setRight(s)
+		elif (i<self.size):
+			current_rank = self.findRank(i+1)
+			if(current.left == None):
+				s = AVLNode(val)
+				s.setParent(current)
+				current.setLeft(s)
+			else:
+
+
+
 		return -1
 
 
@@ -321,6 +355,11 @@ class AVLTreeList(object):
 	"""
 	def getRoot(self):
 		return self.root
+
+
+
+
+
 
 
 import sys

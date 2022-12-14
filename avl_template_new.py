@@ -6,6 +6,78 @@
 
 
 
+def printree(t, bykey=True):
+    """Print a textual representation of t
+    bykey=True: show keys instead of values"""
+    # for row in trepr(t, bykey):
+    #        print(row)
+    return trepr(t, bykey)
+
+
+def trepr(t, bykey=False):
+    """Return a list of textual representations of the levels in t
+    bykey=True: show keys instead of values"""
+    if t == None:
+        return ["#"]
+
+    thistr = str(t.value) if bykey else str(t.value)
+
+    return conc(trepr(t.left, bykey), thistr, trepr(t.right, bykey))
+
+
+def conc(left, root, right):
+    """Return a concatenation of textual represantations of
+    a root node, its left node, and its right node
+    root is a string, and left and right are lists of strings"""
+
+    lwid = len(left[-1])
+    rwid = len(right[-1])
+    rootwid = len(root)
+
+    result = [(lwid + 1) * " " + root + (rwid + 1) * " "]
+
+    ls = leftspace(left[0])
+    rs = rightspace(right[0])
+    result.append(ls * " " + (lwid - ls) * "_" + "/" + rootwid * " " + "\\" + rs * "_" + (rwid - rs) * " ")
+
+    for i in range(max(len(left), len(right))):
+        row = ""
+        if i < len(left):
+            row += left[i]
+        else:
+            row += lwid * " "
+
+        row += (rootwid + 2) * " "
+
+        if i < len(right):
+            row += right[i]
+        else:
+            row += rwid * " "
+
+        result.append(row)
+
+    return result
+
+
+def leftspace(row):
+    """helper for conc"""
+    # row is the first row of a left node
+    # returns the index of where the second whitespace starts
+    i = len(row) - 1
+    while row[i] == " ":
+        i -= 1
+    return i + 1
+
+
+def rightspace(row):
+    """helper for conc"""
+    # row is the first row of a right node
+    # returns the index of where the first whitespace ends
+    i = 0
+    while row[i] == " ":
+        i += 1
+    return i
+
 """A class represnting a node in an AVL tree"""
 
 class AVLNode(object):
@@ -29,6 +101,8 @@ class AVLNode(object):
 		return self.rank
 	def setSize(self,s):
 		self.size=s
+	def getSize_node(self):
+		return self.size
 
 
 	"""returns the left child
@@ -118,6 +192,8 @@ class AVLNode(object):
 		self.height=h
 		return None
 
+	
+
 	"""returns whether self is not a virtual node 
 
 	@rtype: bool
@@ -127,24 +203,6 @@ class AVLNode(object):
 		if(self==None) :
 			return False
 		return True
-
-	def predecessor(self):
-		return
-	def minNode(self):
-		current = self
-		while(current.left!=None):
-			current=current.left
-		return current
-	def successor(self):
-		x=self
-		if x.right != None:
-			return minNode(x.right)
-		y=self.parent
-		while(y!=None and x == y.right):
-			x=y
-			y=x.parent
-		return y
-
 
 
 """
@@ -188,8 +246,8 @@ class AVLTreeList(object):
 
 	def findRank(self,i):                        ## return the node of rank i
 		current = self.root
-		while(current.getRank != i):
-			if(i>current.getRank):
+		while(current.getRank() != i):
+			if(i>current.getRank()):
 				current=current.right
 			else:
 				current=current.left
@@ -212,7 +270,10 @@ class AVLTreeList(object):
 				node1.setSize(s1)
 				return s1
 		s = size_rec(self.root)
+		self.size=s
 		self.root.setSize(s)
+
+
 
 
 	"""retrieves the value of the i'th item in the list
@@ -246,24 +307,100 @@ class AVLTreeList(object):
 	@returns: the number of rebalancing operation due to AVL rebalancing
 	"""
 	def insert(self, i, val):
+		if(self.root==None):
+			self.root=AVLNode(val)
+			self.size=1
+			return
 		current = self.root
+
 		if(i==self.size):
-			while(current.right!=None):
-				current=current.right
+			maxNode=self.maxNode(current)
 			s=AVLNode(val)
-			s.setParent(current)
-			current.setRight(s)
+			s.setParent(maxNode)
+			maxNode.setRight(s)
 		elif (i<self.size):
-			current_rank = self.findRank(i+1)
-			if(current.left == None):
+			nodeRank = self.findRank(i+1)
+			if(nodeRank.left == None):
 				s = AVLNode(val)
-				s.setParent(current)
-				current.setLeft(s)
+				s.setParent(nodeRank)
+				nodeRank.setLeft(s)
 			else:
+				p = nodeRank.predecessor()
+				s = AVLNode(val)
+				s.setParent(nodeRank)
+				p.setRight(s)
+		size=self.calcSize()
+		self.root.setSize(size)
+		return
 
 
+	""" rotate Left and Right 
+	"""
+	def rotateLeft(self,A):
+		B = A.getRight()
+		left_B = B.getLeft()
+		
+		B.setLeft(A)
+		A.setRight(left_B)
 
-		return -1
+		# if(self.root==):
+
+
+		return
+	
+	def rotateRight(self,A):
+		B = A.getParent()
+		right_A = A.getRight()
+		
+		
+		A.setRight(B)
+		B.setLeft(right_A)
+
+		if(self.root == A):
+			A.setParent(None)
+		B.setParent(A)
+
+		return
+		
+
+	"""predecessor and successor
+	"""
+	def predecessor(self,node):
+		x=node
+		if(x.left!=None):
+			return x.left.maxNode()
+		y=self.parent
+		while(y!=None and x==y.left):
+			x=y
+			y=x.parent
+		return y 
+
+	def successor(self,node):
+		x=node
+		if x.right != None:
+			return x.right.minNode()
+		y=self.parent
+		while(y!=None and x == y.right):
+			x=y
+			y=x.parent
+		return y
+
+	"""min and max node
+	"""
+	def minNode(self,node):
+		if node==None: return None
+		current = node
+		while(current.left!=None):
+			current=current.left
+		return current
+
+	def maxNode(self,node):
+		if node==None: return None
+		current=node
+		while(current.right!=None):
+			current=current.right
+		return current
+
 
 
 	"""deletes the i'th item in the list
@@ -277,6 +414,11 @@ class AVLTreeList(object):
 	def delete(self, i):
 		return -1
 
+	def __repr__(self):  # no need to understand the implementation of this one
+		out = ""
+		for row in printree(self.root):  # need printree.py file
+			out = out + row + "\n"
+		return out
 
 	"""returns the value of the first item in the list
 
@@ -364,4 +506,13 @@ class AVLTreeList(object):
 
 import sys
 
+
+
+tree=AVLTreeList()
+tree.insert(0,6)
+tree.insert(1,3)
+tree.insert(2,8)
+tree.insert(2,8)
+
+print(tree)
 print("User Current Version:-", sys.version)

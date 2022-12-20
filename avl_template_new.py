@@ -220,8 +220,12 @@ class AVLTreeList(object):
 		self.root = None
 
 		# add your fields here
-
-
+	def setRoot(self,node):
+		self.root=node
+	def getRoot(self):
+		return  self.root
+	def getSize(self):
+		return self.size
 	"""returns whether the list is empty
 
 	@rtype: bool
@@ -312,9 +316,9 @@ class AVLTreeList(object):
 			self.size=1
 			return
 		current = self.root
-
 		if(i==self.size):
 			maxNode=self.maxNode(current)
+			print(id(maxNode))
 			s=AVLNode(val)
 			s.setParent(maxNode)
 			maxNode.setRight(s)
@@ -337,29 +341,31 @@ class AVLTreeList(object):
 	""" rotate Left and Right 
 	"""
 	def rotateLeft(self,A):
+		tmp=A.getParent()
 		B = A.getRight()
 		left_B = B.getLeft()
-		
 		B.setLeft(A)
+		A.setParent(B)
 		A.setRight(left_B)
-
-		# if(self.root==):
-
-
+		if(self.root==B):
+		 	B.setParent(None)
+		else:
+		 	B.setParent(tmp)
+		self.setRoot(B)
 		return
-	
+
 	def rotateRight(self,A):
 		B = A.getParent()
 		right_A = A.getRight()
-		
-		
 		A.setRight(B)
 		B.setLeft(right_A)
-
+		tmp=B.getParent()
 		if(self.root == A):
 			A.setParent(None)
+		else:
+			A.setParent(tmp)
 		B.setParent(A)
-
+		self.setRoot(A)
 		return
 		
 
@@ -508,11 +514,18 @@ import sys
 
 
 
-tree=AVLTreeList()
-tree.insert(0,6)
-tree.insert(1,3)
-tree.insert(2,8)
-tree.insert(2,8)
 
-print(tree)
+tree1=AVLTreeList()
+tree1.insert(0,6)
+tree1.insert(1,7)
+tree1.insert(2,8)
+tree1.insert(3,5)
+tree1.insert(4,9)
+print(tree1)
+tree1.rotateLeft(tree1.getRoot().getRight())
+print(tree1)
+tree1.rotateLeft(tree1.getRoot())
+print(tree1)
 print("User Current Version:-", sys.version)
+
+print("hi")

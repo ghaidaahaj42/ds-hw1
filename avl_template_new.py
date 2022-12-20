@@ -277,6 +277,18 @@ class AVLTreeList(object):
 		self.size=s
 		self.root.setSize(s)
 
+	def calcSize_node(self,node):
+		def size_rec(node1):
+			if node1==None:
+				return 0
+			else:
+				s1 = 1+ size_rec(node1.left)+size_rec(node1.right)
+				node1.setSize(s1)
+				return s1
+		s = size_rec(node)
+		node.setSize(s)
+
+
 
 
 
@@ -323,6 +335,7 @@ class AVLTreeList(object):
 			s.setParent(maxNode)
 			maxNode.setRight(s)
 		elif (i<self.size):
+			print(self)
 			nodeRank = self.findRank(i+1)
 			if(nodeRank.left == None):
 				s = AVLNode(val)
@@ -518,17 +531,13 @@ import sys
 tree1=AVLTreeList()
 tree1.insert(0,6)
 tree1.insert(1,7)
-tree1.insert(2,8)
-tree1.insert(3,5)
-tree1.insert(4,9)
+tree1.insert(0,5)
+# tree1.insert(3,5)
+# tree1.insert(4,9)
 print(tree1)
-tree1.rotateLeft(tree1.getRoot().getRight())
-print(tree1)
-tree1.rotateLeft(tree1.getRoot())
-print(tree1)
-print("User Current Version:-", sys.version)
+# tree1.rotateLeft(tree1.getRoot().getRight())
+# print(tree1)
+# tree1.rotateLeft(tree1.getRoot())
+# print(tree1)
+# print("User Current Version:-", sys.version)
 
-print("hi")
-print("hi11")
-print("tagroba")
-print("tagroba111")

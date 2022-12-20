@@ -3,7 +3,7 @@
 #name1    - basel erw
 #id2      - 212024442
 #name2    - gaaidaa haj
-
+import random
 
 
 def printree(t, bykey=True):
@@ -92,13 +92,9 @@ class AVLNode(object):
 		self.right = None
 		self.parent = None
 		self.height = -1
-		self.rank = 0
-		self.size=0
+		self.size=1
+		self.BF=0
 
-	def setRank(self,rank):
-		self.rank=rank
-	def getRank(self):
-		return self.rank
 	def setSize(self,s):
 		self.size=s
 	def getSize_node(self):
@@ -218,6 +214,8 @@ class AVLTreeList(object):
 	def __init__(self):
 		self.size = 0
 		self.root = None
+		self.start=None
+		self.end=None
 
 		# add your fields here
 	def setRoot(self,node):
@@ -234,29 +232,29 @@ class AVLTreeList(object):
 	def empty(self):
 		return self.root==None
 
-	def getRank(self,v):
-		counter = 0
-		current = self.root
-		while current is not None and not (current.value == v):
-			if current.value> v :
-				current = current.left
-			else:
-				counter += current.getsize(current.left) + 1
-				current = current.right
-		if current is not None:
-			counter += current.getsize(current.left) + 1
-			current.setRank(counter)
-		current.setRank(counter)
-
-	def findRank(self,i):                        ## return the node of rank i
-		current = self.root
-		while(current.getRank() != i):
-			if(i>current.getRank()):
-				current=current.right
-			else:
-				current=current.left
-		return current
-
+	# def getRank(self,v):
+	# 	counter = 0
+	# 	current = self.root
+	# 	while current is not None and not (current.value == v):
+	# 		if current.value> v :
+	# 			current = current.left
+	# 		else:
+	# 			counter += current.getsize(current.left) + 1
+	# 			current = current.right
+	# 	if current is not None:
+	# 		counter += current.getsize(current.left) + 1
+	# 		current.setRank(counter)
+	# 	current.setRank(counter)
+	#
+	# def findRank(self,i):                        ## return the node of rank i
+	# 	current = self.root
+	# 	while(current.getRank() != i):
+	# 		if(i>current.getRank()):
+	# 			current=current.right
+	# 		else:
+	# 			current=current.left
+	# 	return current
+	#
 
 
 
@@ -327,6 +325,7 @@ class AVLTreeList(object):
 		if(self.root==None):
 			self.root=AVLNode(val)
 			self.size=1
+			self.root.setRank(1)
 			return
 		current = self.root
 		if(i==self.size):
@@ -335,9 +334,11 @@ class AVLTreeList(object):
 			s=AVLNode(val)
 			s.setParent(maxNode)
 			maxNode.setRight(s)
+			s.setRank(i)
 		elif (i<self.size):
 			print(self)
 			nodeRank = self.findRank(i+1)
+			print(nodeRank)
 			if(nodeRank.left == None):
 				s = AVLNode(val)
 				s.setParent(nodeRank)
@@ -347,10 +348,14 @@ class AVLTreeList(object):
 				s = AVLNode(val)
 				s.setParent(nodeRank)
 				p.setRight(s)
+
 		size=self.calcSize()
 		self.size=size
 		print (size)
 		self.root.setSize(size)
+		return
+
+	def setRanks(self,s,i):
 		return
 
 
@@ -383,7 +388,18 @@ class AVLTreeList(object):
 		B.setParent(A)
 		self.setRoot(A)
 		return
-		
+
+	def Tree_Select(self,k):
+		def Tree_Select_rec(node, k):
+			x = node
+			r = x.getLeft().getSize() + 1
+			if k==r:
+				return x
+			elif (k<r):
+				return Tree_Select_rec(node.getLeft(),k)
+			else:
+				return Tree_Select_rec(node.getRight(),k-r)
+		return Tree_Select_rec(self.root, k)
 
 	"""predecessor and successor
 	"""
@@ -410,19 +426,9 @@ class AVLTreeList(object):
 	"""min and max node
 	"""
 	def minNode(self,node):
-		if node==None: return None
-		current = node
-		while(current.left!=None):
-			current=current.left
-		return current
-
+		return
 	def maxNode(self,node):
-		if node==None: return None
-		current=node
-		while(current.right!=None):
-			current=current.right
-		return current
-
+		return
 
 
 	"""deletes the i'th item in the list
@@ -448,15 +454,16 @@ class AVLTreeList(object):
 	@returns: the value of the first item, None if the list is empty
 	"""
 	def first(self):
-		return None
-
+		if self.empty(): return None
+		return self.start
 	"""returns the value of the last item in the list
 
 	@rtype: str
 	@returns: the value of the last item, None if the list is empty
 	"""
 	def last(self):
-		return None
+		if self.empty(): return None
+		return self.end
 
 	"""returns an array representing list 
 
@@ -464,7 +471,22 @@ class AVLTreeList(object):
 	@returns: a list of strings representing the data structure
 	"""
 	def listToArray(self):
-		return None
+		if(self.empty()):
+			return []
+		else:
+			return self.listToArray_rec(self.root)
+
+	def listToArray_rec(node):
+		if (node == None):
+			return []
+		else:
+			arr = []
+			left = AVLTreeList.listToArray_rec(node.getLeft())
+			right = AVLTreeList.listToArray_rec(node.getRight())
+			arr = left + [node.value] + right
+			return arr
+
+
 
 	"""returns the size of the list 
 
@@ -472,7 +494,7 @@ class AVLTreeList(object):
 	@returns: the size of the list
 	"""
 	def length(self):
-		return None
+		return self.size
 
 	"""sort the info values of the list
 
@@ -488,6 +510,13 @@ class AVLTreeList(object):
 	@returns: an AVLTreeList where the values are permuted randomly by the info of the original list. ##Use Randomness
 	"""
 	def permutation(self):
+		arr = self.listToArray()
+		result = []
+		while(len(arr)!=0):
+			random = random.randrange(0,len(arr));
+			if(random<len(arr)):
+				result+=arr[random]
+				arr.pop(random)
 		return None
 
 	"""concatenates lst to self
@@ -508,7 +537,8 @@ class AVLTreeList(object):
 	@returns: the first index that contains val, -1 if not found.
 	"""
 	def search(self, val):
-		return None
+		arr=self.listToArray().sort()
+		index=arr.index(val)
 
 
 
@@ -518,6 +548,7 @@ class AVLTreeList(object):
 	@returns: the root, None if the list is empty
 	"""
 	def getRoot(self):
+		if self.empty() : return None
 		return self.root
 
 
@@ -526,21 +557,18 @@ class AVLTreeList(object):
 
 
 
-import sys
 
 
-
-
-tree1=AVLTreeList()
-tree1.insert(0,6)
-tree1.insert(1,7)
-tree1.insert(0,5)
-# tree1.insert(3,5)
-# tree1.insert(4,9)
-print(tree1)
+# tree1=AVLTreeList()
+# tree1.insert(0,6)
+# tree1.insert(1,7)
+# tree1.insert(0,5)
+# tree1.insert(0,4)
+# # tree1.insert(3,5)
+# # tree1.insert(4,9)
+# print(tree1)
 # tree1.rotateLeft(tree1.getRoot().getRight())
 # print(tree1)
 # tree1.rotateLeft(tree1.getRoot())
 # print(tree1)
 # print("User Current Version:-", sys.version)
-

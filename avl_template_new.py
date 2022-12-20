@@ -276,6 +276,7 @@ class AVLTreeList(object):
 		s = size_rec(self.root)
 		self.size=s
 		self.root.setSize(s)
+		return s
 
 	def calcSize_node(self,node):
 		def size_rec(node1):
@@ -347,6 +348,8 @@ class AVLTreeList(object):
 				s.setParent(nodeRank)
 				p.setRight(s)
 		size=self.calcSize()
+		self.size=size
+		print (size)
 		self.root.setSize(size)
 		return
 

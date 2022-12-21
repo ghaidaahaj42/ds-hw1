@@ -94,11 +94,11 @@ class AVLNode(object):
 		self.height = -1
 		self.size=0
 
-	def setSize(self,s):
+	def setSize_node(self,s):
 		self.size=s
 	def getSize_node(self):
+		if self is None: return 0
 		return self.size
-
 
 	"""returns the left child
 	@rtype: AVLNode
@@ -138,7 +138,8 @@ class AVLNode(object):
 	@returns: the height of self, -1 if the node is virtual
 	"""
 	def getHeight(self):
-		return self.right
+		if self is None : return -1
+		return self.height
 
 	"""sets left child
 	@type node: AVLNode
@@ -195,9 +196,13 @@ class AVLNode(object):
 		return True
 	def getBF(self):
 		if(not self.isRealNode()): return 0
-		if(self.left==None and self.right==None): return 0
-		left_H= self.getLeft().getHeight()
-		right_H=self.getRight().getHeight()
+		if(not AVLNode.isRealNode(self.getLeft()) and not AVLNode.isRealNode(self.getRight())): return 0
+		right_H = -1
+		left_H = -1
+		if(AVLNode.isRealNode(self.getLeft())):
+			left_H= self.getLeft().getHeight()
+		if (AVLNode.isRealNode(self.getRight())):
+			right_H= self.getRight().getHeight()
 		return left_H-right_H
 
 """
@@ -221,8 +226,7 @@ class AVLTreeList(object):
 		self.root=node
 	def getRoot(self):   #O(1)
 		return  self.root
-	def getSize(self):     #O(1)
-		return self.size
+
 	"""returns whether the list is empty
 
 	@rtype: bool
@@ -231,33 +235,11 @@ class AVLTreeList(object):
 	def empty(self):     #O(1)
 		return self.root==None
 
-	def getsize(self):     #O(1)
+	def getSize(self):     #O(1)
 		if self.root is None : return 0
-		return self.root.size
-
-	def calcSize(self):      #O(n)
-		def size_rec(node1):
-			if node1==None:
-				return 0
-			else:
-				s1 = 1+ size_rec(node1.left)+size_rec(node1.right)
-				node1.setSize(s1)
-				return s1
-		s = size_rec(self.root)
-		self.size=s
-		self.root.setSize(s)
-		return s
-
-	def calcSize_node(self,node):    #O(n)
-		def size_rec(node1):
-			if node1==None:
-				return 0
-			else:
-				s1 = 1+ size_rec(node1.left)+size_rec(node1.right)
-				node1.setSize(s1)
-				return s1
-		s = size_rec(node)
-		node.setSize(s)
+		return self.size
+	def setSize(self,i):
+		self.size=i
 
 	"""retrieves the value of the i'th item in the list
 
@@ -286,36 +268,86 @@ class AVLTreeList(object):
 	def insert(self, i, val):
 		if(self.root==None):
 			self.root=AVLNode(val)
-			self.size=1
-			self.root.setRank(1)
+			self.setSize(1)
+			self.getRoot().setSize_node(1)
+			self.end=self.getRoot()
+			self.start=self.getRoot()
+			self.getRoot().setHeight(0)
 			return
+
+
 		current = self.root
+		s = AVLNode(val)
 		if(i==self.size):
 			maxNode=self.maxNode(current)
-			print(id(maxNode))
-			s=AVLNode(val)
 			s.setParent(maxNode)
 			maxNode.setRight(s)
-			s.setRank(i)
+			s.setSize_node(1)
 		elif (i<self.size):
-			print(self)
-			nodeRank = self.findRank(i+1)
-			print(nodeRank)
-			if(nodeRank.left == None):
-				s = AVLNode(val)
-				s.setParent(nodeRank)
-				nodeRank.setLeft(s)
+			nodeSelect= self.Tree_Select(i+1)
+			if(nodeSelect.left == None):
+				s.setParent(nodeSelect)
+				nodeSelect.setLeft(s)
+				s.setSize_node(1)
+			if(i==0):
+				self.start = s
 			else:
-				p = nodeRank.predecessor()
-				s = AVLNode(val)
-				s.setParent(nodeRank)
+				p = nodeSelect.predecessor()
+				s.setParent(nodeSelect)
 				p.setRight(s)
 
-		size=self.calcSize()
-		self.size=size
-		print (size)
-		self.root.setSize(size)
+		self.setSize(1+self.getSize())
+		s.setHeight(0)
+		self.fix_the_Hights(s)
+		self.fix_the_tree(s)
+		self.fix_sizes(s)
+
+
 		return
+
+
+	def fix_the_Hights(self,node):
+		parent=node.parent
+		while(parent !=None):
+			parent.setHeight(1+max(AVLNode.getHeight(parent.getRight()),AVLNode.getHeight(parent.getLeft())))
+			parent=parent.getParent()
+
+
+
+	def fix_sizes(self, node):
+		parent=node.getParent()
+		while(parent!=None):
+			parent.setSize_node(parent.getSize_node()+1)
+			parent=parent.getParent()
+	def fix_the_tree(self,node):
+		y=node.getParent()
+
+		while(y!=None):
+			Bf=y.getBF()
+			if(Bf==1 or Bf==-1  and AVLNode.getHeight(y.getLeft())==AVLNode.getHeight(y.getRight())): return
+			if(Bf==1 or Bf==-1 and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
+				y=y.getParent()
+				continue
+			if(Bf==2):
+				node = y.getLeft()
+				if(y.getBF()==1):self.rotateRight(y)
+				if (y.getBF() == -1):
+					self.rotateLeft(y)
+					self.rotateRight(y)
+					return
+			if (Bf==-2):
+				node=y.getRight()
+				if(node.getBF()==1):
+					self.rotateRight(y)
+					self.rotateLeft(y)
+
+				if (node.getBF() == -1):
+					self.rotateLeft(y)
+				return
+
+
+
+
 
 
 
@@ -329,8 +361,8 @@ class AVLTreeList(object):
 		B.setLeft(A)
 		A.setParent(B)
 		A.setRight(left_B)
-		if(self.root==B):
-		 	B.setParent(None)
+		if(B.getParent==None):
+			self.setRoot(B)
 		else:
 		 	B.setParent(tmp)
 		self.setRoot(B)
@@ -342,8 +374,8 @@ class AVLTreeList(object):
 		A.setRight(B)
 		B.setLeft(right_A)
 		tmp=B.getParent()
-		if(self.root == A):
-			A.setParent(None)
+		if(A.getParent==None):
+			self.setRoot(A)
 		else:
 			A.setParent(tmp)
 		B.setParent(A)
@@ -391,15 +423,17 @@ class AVLTreeList(object):
 	def minNode(self,node):     #O(log(n))
 		if( not AVLNode.isRealNode(node)): return None
 		left=node.getLeft()
+		if left is None : return  node
 		while(AVLNode.isRealNode(left.getLeft())):
 			left=left.getLeft()
 		return left
 
 
 		return
-	def maxNode(self,node):           #O(log(n))
+	def maxNode(self,node): #O(log(n))
 		if( not AVLNode.isRealNode(node)): return None
 		right=node.getRight()
+		if(right is None): return node
 		while(AVLNode.isRealNode(right.getRight())):
 			right=right.getRight()
 		return right
@@ -550,18 +584,12 @@ class AVLTreeList(object):
 
 
 
-
 tree1=AVLTreeList()
+tree1.insert(0,6)
+tree1.insert(1,7)
+tree1.insert(2,8)
+tree1.insert(3,99)
+tree1.insert(4,4)
+print(tree1.size)
 
-# tree1.insert(0,6)
-# tree1.insert(1,7)
-# tree1.insert(0,5)
-# tree1.insert(0,4)
-# # tree1.insert(3,5)
-# # tree1.insert(4,9)
-# print(tree1)
-# tree1.rotateLeft(tree1.getRoot().getRight())
-# print(tree1)
-# tree1.rotateLeft(tree1.getRoot())
-# print(tree1)
-# print("User Current Version:-", sys.version)
+print(tree1)

@@ -334,7 +334,8 @@ class AVLTreeList(object):
 				if (y.getBF() == -1):
 					self.rotateLeft(y)
 					self.rotateRight(y)
-					return
+				y = y.getParent()
+				return
 			if (Bf==-2):
 				node=y.getRight()
 				if(node.getBF()==1):
@@ -343,6 +344,7 @@ class AVLTreeList(object):
 
 				if (node.getBF() == -1):
 					self.rotateLeft(y)
+				y = y.getParent()
 				return
 
 
@@ -589,8 +591,8 @@ tree1=AVLTreeList()
 tree1.insert(0,6)
 tree1.insert(1,7)
 tree1.insert(2,8)
-tree1.insert(3,4)
-
+tree1.insert(0,0)
+tree1.insert(0,11)
 print(tree1.size)
 
 

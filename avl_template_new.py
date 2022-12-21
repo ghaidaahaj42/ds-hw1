@@ -292,7 +292,7 @@ class AVLTreeList(object):
 			if(i==0):
 				self.start = s
 			else:
-				p = nodeSelect.predecessor()
+				p = self.predecessor(nodeSelect)
 				s.setParent(nodeSelect)
 				p.setRight(s)
 
@@ -365,6 +365,7 @@ class AVLTreeList(object):
 			self.setRoot(B)
 		else:
 		 	B.setParent(tmp)
+
 		self.setRoot(B)
 		return
 
@@ -387,7 +388,7 @@ class AVLTreeList(object):
 	def Tree_Select(self,k):     #O(log(n))
 		def Tree_Select_rec(node, k):
 			x = node
-			r = x.getLeft().getSize() + 1
+			r = AVLNode.getSize_node(x.getLeft()) + 1
 			if k==r:
 				return x
 			elif (k<r):
@@ -588,8 +589,9 @@ tree1=AVLTreeList()
 tree1.insert(0,6)
 tree1.insert(1,7)
 tree1.insert(2,8)
-tree1.insert(3,99)
-tree1.insert(4,4)
+tree1.insert(3,4)
+
 print(tree1.size)
+
 
 print(tree1)

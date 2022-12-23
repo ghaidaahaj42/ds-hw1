@@ -18,7 +18,7 @@ def trepr(t, bykey=False):
     """Return a list of textual representations of the levels in t
     bykey=True: show keys instead of values"""
     if t == None:
-        return ["#"]
+        return ["-"]
 
     thistr = str(t.value) if bykey else str(t.value)
 
@@ -105,6 +105,7 @@ class AVLNode(object):
 	@returns: the left child of self, None if there is no left child
 	"""
 	def getLeft(self):
+		if self==None : return None
 		return self.left
 
 
@@ -122,6 +123,7 @@ class AVLNode(object):
 	@returns: the parent of self, None if there is no parent
 	"""
 	def getParent(self):
+		if self is None: return None
 		return self.parent
 
 	"""return the value
@@ -146,6 +148,7 @@ class AVLNode(object):
 	@param node: a node
 	"""
 	def setLeft(self, node):
+		if self == None : return
 		self.left=node
 		return None
 
@@ -275,7 +278,6 @@ class AVLTreeList(object):
 			self.getRoot().setHeight(0)
 			return
 
-
 		current = self.root
 		s = AVLNode(val)
 		if(i==self.size):
@@ -289,12 +291,13 @@ class AVLTreeList(object):
 				s.setParent(nodeSelect)
 				nodeSelect.setLeft(s)
 				s.setSize_node(1)
-			if(i==0):
-				self.start = s
+
 			else:
 				p = self.predecessor(nodeSelect)
 				s.setParent(nodeSelect)
 				p.setRight(s)
+			if(i==0):
+				self.start = s
 
 		self.setSize(1+self.getSize())
 		s.setHeight(0)
@@ -307,7 +310,7 @@ class AVLTreeList(object):
 
 
 	def fix_the_Hights(self,node):
-		parent=node.parent
+		parent=node.getParent()
 		while(parent !=None):
 			parent.setHeight(1+max(AVLNode.getHeight(parent.getRight()),AVLNode.getHeight(parent.getLeft())))
 			parent=parent.getParent()
@@ -321,33 +324,40 @@ class AVLTreeList(object):
 			parent=parent.getParent()
 	def fix_the_tree(self,node):
 		y=node.getParent()
-
 		while(y!=None):
 			Bf=y.getBF()
-			if(Bf==1 or Bf==-1  and AVLNode.getHeight(y.getLeft())==AVLNode.getHeight(y.getRight())): return
-			if(Bf==1 or Bf==-1 and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
+			if((Bf==1 or Bf==0 or  Bf==-1 ) and AVLNode.getHeight(y.getLeft())==AVLNode.getHeight(y.getRight())):
+				return
+			if((Bf==1 or Bf==-1) and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
 				y=y.getParent()
 				continue
+
+
 			if(Bf==2):
 				node = y.getLeft()
-				if(y.getBF()==1):self.rotateRight(y)
-				if (y.getBF() == -1):
+				if(node.getBF()==1):self.rotateRight(node)
+				if (node.getBF() == -1):
 					self.rotateLeft(y)
 					self.rotateRight(y)
 				y = y.getParent()
+				node.setHeight(AVLTreeList.calcHieght(self,node))
+				self.fix_the_Hights(node)
 				return
 			if (Bf==-2):
 				node=y.getRight()
 				if(node.getBF()==1):
 					self.rotateRight(y)
 					self.rotateLeft(y)
-
 				if (node.getBF() == -1):
 					self.rotateLeft(y)
 				y = y.getParent()
+				node.setHeight(AVLTreeList.calcHieght(self,node))
+				self.fix_the_Hights(node)
 				return
-
-
+	def calcHieght(self,node):
+		if node == None: return -1
+		if node.getRight()==None and node.getLeft()==None:return 0
+		return (1+max(self.calcHieght(node.getLeft()),self.calcHieght(node.getRight())))
 
 
 
@@ -357,32 +367,43 @@ class AVLTreeList(object):
 	""" rotate Left and Right 
 	"""
 	def rotateLeft(self,A):      #O(1)
-		tmp=A.getParent()
-		B = A.getRight()
-		left_B = B.getLeft()
-		B.setLeft(A)
+		tmp=AVLNode.getParent(A)
+		B = AVLNode.getRight(A)
+		left_B = AVLNode.getLeft(B)
+		AVLNode.setLeft(B,A)
 		A.setParent(B)
 		A.setRight(left_B)
-		if(B.getParent==None):
+		if(AVLNode.getParent(B)==None):
 			self.setRoot(B)
-		else:
-		 	B.setParent(tmp)
 
-		self.setRoot(B)
+		B.setParent(tmp)
+		if(A==self.getRoot()):self.setRoot(B)
+		A.setHeight(self.calcHieght(A))
+		B.setHeight(self.calcHieght(B))
+		self.fix_the_Hights(A)
+		self.fix_sizes(A)
 		return
 
-	def rotateRight(self,A):    #O(1)
+	def rotateRight(self,A):  #O(1)
 		B = A.getParent()
 		right_A = A.getRight()
 		A.setRight(B)
 		B.setLeft(right_A)
 		tmp=B.getParent()
-		if(A.getParent==None):
+		if(AVLNode.getParent(A)==None or self.getRoot()==B):
 			self.setRoot(A)
-		else:
-			A.setParent(tmp)
+		parentB=B.getParent()
+		if parentB is not None:
+			if(parentB.getRight==B):
+				parentB.setRight(A)
+			else:
+				parentB.setLeft(A)
+		A.setParent(tmp)
 		B.setParent(A)
-		self.setRoot(A)
+		A.setHeight(self.calcHieght(A))
+		B.setHeight(self.calcHieght(B))
+		self.fix_sizes(A)
+		self.fix_the_Hights(A)
 		return
 
 
@@ -593,7 +614,9 @@ tree1.insert(1,7)
 tree1.insert(2,8)
 tree1.insert(0,0)
 tree1.insert(0,11)
-print(tree1.size)
+tree1.insert(1,4)
+
+
 
 
 print(tree1)

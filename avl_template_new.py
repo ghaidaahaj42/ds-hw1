@@ -294,7 +294,7 @@ class AVLTreeList(object):
 
 			else:
 				p = self.predecessor(nodeSelect)
-				s.setParent(nodeSelect)
+				s.setParent(p)
 				p.setRight(s)
 			if(i==0):
 				self.start = s
@@ -328,7 +328,7 @@ class AVLTreeList(object):
 			Bf=y.getBF()
 			if((Bf==1 or Bf==0 or  Bf==-1 ) and AVLNode.getHeight(y.getLeft())==AVLNode.getHeight(y.getRight())):
 				return
-			if((Bf==1 or Bf==-1) and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
+			if((Bf==1 or Bf==0 or Bf==-1) and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
 				y=y.getParent()
 				continue
 
@@ -615,6 +615,8 @@ tree1.insert(2,8)
 tree1.insert(0,0)
 tree1.insert(0,11)
 tree1.insert(1,4)
+tree1.insert(1,67)
+print(tree1.getRoot().getLeft().getBF())
 
 
 

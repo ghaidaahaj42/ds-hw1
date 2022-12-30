@@ -339,9 +339,9 @@ class AVLTreeList(object):
 
 	def fix_sizes(self, node,insertion):
 		parent=AVLNode.getParent(node)
-		if(AVLNode.getValue(AVLNode.getLeft(parent))!='Virtual'and parent!=None):
+		if(AVLNode.getValue(AVLNode.getLeft(parent))!='Virtual'and parent!=None and parent.getLeft()!=	None):
 			parent.getLeft().setSize_node(AVLNode.getSize_node(parent.getLeft().getLeft())+AVLNode.getSize_node(parent.getLeft().getRight())+1)
-		if(AVLNode.getValue(AVLNode.getRight(parent))!='Virtual'and parent!=None):
+		if(AVLNode.getValue(AVLNode.getRight(parent))!='Virtual'and parent!=None and parent.getRight()!=None):
 			parent.getRight().setSize_node(parent.getRight().getLeft().getSize_node()+parent.getRight().getRight().getSize_node()+1)
 
 		tmpParent=AVLNode.getParent(parent)
@@ -366,8 +366,6 @@ class AVLTreeList(object):
 			if((Bf==1 or Bf==0 or Bf==-1) and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
 				y=y.getParent()
 				continue
-
-
 			if(Bf==2):
 				node = y.getLeft()
 				if(node.getBF()==1 or(node.getBF()==0 and not insert)):
@@ -615,6 +613,7 @@ class AVLTreeList(object):
 
 				self.fix_the_Hights(virtualNode,False)
 				self.fix_sizes(virtualNode,False)
+				self.setSize(self.getSize() - 1)
 				return ( self.fix_the_tree(virtualNode,False))
 
 			# 	check if the node that we want to delete has one child
@@ -638,6 +637,7 @@ class AVLTreeList(object):
 				curr.setLeft(None)
 				self.fix_the_Hights(parent, False)
 				self.fix_sizes(parent, False)
+				self.setSize(self.getSize() - 1)
 				return (self.fix_the_tree(parent))
 			# if the node that we want to delet have 2 children
 			else:
@@ -819,37 +819,40 @@ class AVLTreeList(object):
 
 
 tree1=AVLTreeList()
-tree1.insert(0,6)
-tree1.insert(1,7)
-tree1.insert(2,8)
-tree1.insert(0,0)
-tree1.insert(0,11)
-tree1.insert(1,4)
-tree1.insert(1,67)
-tree1.insert(5,2000)
-tree1.insert(0,8)
-tree1.insert(1,10000)
+for i in range(800):
+	tree1.insert(i,i)
+
+for i in range (400):
+	tree1.delete(i)
+
+
+# هيك بعطي ايرور قال ، بدييي انجننننننننن
+# for i in range(400,0,-1):
+# 	tree1.delete(i)
 
 print(tree1)
+print(tree1.getSize())
 
-print(tree1.delete(5))
-print(tree1)
-print(tree1.delete(5))
-print(tree1)
-print(tree1.delete(4))
-print(tree1)
-print(tree1.delete(3))
-print(tree1)
-print(tree1.delete(3))
-print(tree1)
-print(tree1.delete(4))
-print(tree1)
-print(tree1.delete(2))
-print(tree1)
-print(tree1.delete(1))
-print(tree1)
-print(tree1.delete(0))
-print(tree1)
-print(tree1.delete(0))
+
+#
+# print(tree1.delete(5))
+# print(tree1)
+# print(tree1.delete(5))
+# print(tree1)
+# print(tree1.delete(4))
+# print(tree1)
+# print(tree1.delete(3))
+# print(tree1)
+# print(tree1.delete(3))
+# print(tree1)
+# print(tree1.delete(4))
+# print(tree1)
+# print(tree1.delete(2))
+# print(tree1)
+# print(tree1.delete(1))
+# print(tree1)
+# print(tree1.delete(0))
+# print(tree1)
+# print(tree1.delete(0))
 # print(tree1)
 

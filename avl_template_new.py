@@ -623,6 +623,7 @@ class AVLTreeList(object):
 				if( curr.getLeft().isRealNode()):
 					if(right):
 						parent.setRight(curr.getLeft())
+
 					else:
 						parent.setLeft(curr.getLeft())
 				if ( curr.getRight().isRealNode()):
@@ -632,6 +633,10 @@ class AVLTreeList(object):
 						parent.setLeft(curr.getRight())
 				parent.setSize_node(parent.getSize_node() - 1)
 				parent.setHeight(1 +max( AVLNode.getHeight(parent.getLeft()),AVLNode.getHeight(parent.getRight())))
+				#
+				curr.getLeft().setParent(parent)
+
+				#
 				curr.setParent(None)
 				curr.setRight(None)
 				curr.setLeft(None)
@@ -675,8 +680,7 @@ class AVLTreeList(object):
 				self.fix_sizes(y, False)
 				self.fix_the_Hights(y,False)
 				rotation=self.fix_the_tree(y,False)
-
-		self.setSize(self.getSize()-1)
+				self.setSize(self.getSize()-1)
 		return rotation
 
 
@@ -827,11 +831,11 @@ for i in range (400):
 
 
 # هيك بعطي ايرور قال ، بدييي انجننننننننن
-# for i in range(400,0,-1):
+# for i in range(399,0,-1):
 # 	tree1.delete(i)
 
-print(tree1)
-print(tree1.getSize())
+
+
 
 
 #

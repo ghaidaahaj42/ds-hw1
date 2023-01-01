@@ -339,10 +339,12 @@ class AVLTreeList(object):
 
 	def fix_sizes(self, node,insertion):
 		parent=AVLNode.getParent(node)
-		if(AVLNode.getValue(AVLNode.getLeft(parent))!='Virtual'and parent!=None and parent.getLeft()!=	None):
-			parent.getLeft().setSize_node(AVLNode.getSize_node(parent.getLeft().getLeft())+AVLNode.getSize_node(parent.getLeft().getRight())+1)
-		if(AVLNode.getValue(AVLNode.getRight(parent))!='Virtual'and parent!=None and parent.getRight()!=None):
-			parent.getRight().setSize_node(parent.getRight().getLeft().getSize_node()+parent.getRight().getRight().getSize_node()+1)
+		if(parent!=None):
+			if(AVLNode.getLeft(parent).isRealNode() and parent.getLeft()!=None):
+				parent.getLeft().setSize_node(AVLNode.getSize_node(parent.getLeft().getLeft())+AVLNode.getSize_node(parent.getLeft().getRight())+1)
+		if(parent!=None):
+			if (AVLNode.getRight(parent).isRealNode() and parent.getRight() != None):
+				parent.getRight().setSize_node(parent.getRight().getLeft().getSize_node()+parent.getRight().getRight().getSize_node()+1)
 
 		tmpParent=AVLNode.getParent(parent)
 		if(tmpParent!=None):
@@ -358,11 +360,17 @@ class AVLTreeList(object):
 	def fix_the_tree(self,node,insert=True):
 		counter=0
 		y=node.getParent()
-
+		node_BF = node.getBF()
+		if ((node.getBF() == -2 or node.getBF() == 2) and y==None):
+			y = node
 		while(y!=None):
 			Bf=y.getBF()
 			if((Bf==1 or Bf==0 or  Bf==-1 ) and AVLNode.getHeight(y.getLeft())==AVLNode.getHeight(y.getRight())):
-				return 0
+				if(insert):
+					return 0
+				else:
+					y=y.getParent()
+					continue
 			if((Bf==1 or Bf==0 or Bf==-1) and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
 				y=y.getParent()
 				continue
@@ -589,7 +597,7 @@ class AVLTreeList(object):
 			#  check if the node that we want to delete is a leaf
 			if((not curr.getRight().isRealNode()) and (not curr.getLeft().isRealNode())):
 				parent = curr.getParent()
-				# check if we have just one node and we want to delete it
+				  #check if we have just one node and we want to delete it
 				if(parent == None):
 					self.setSize( 0)
 					self.setRoot(None)
@@ -618,33 +626,56 @@ class AVLTreeList(object):
 
 			# 	check if the node that we want to delete has one child
 			parent = curr.getParent()
-			if(not curr.getRight().isRealNode() or not curr.getLeft().isRealNode()):
-				right=parent.getRight()==curr
-				if( curr.getLeft().isRealNode()):
-					if(right):
-						parent.setRight(curr.getLeft())
+			if((not curr.getRight().isRealNode() and curr.getLeft().isRealNode()) or (not curr.getLeft().isRealNode() and curr.getLeft().isRealNode())):
+				if(parent == None):
+					if(self.getRoot().getRight().isRealNode()):
+						right_node = self.getRoot().getRight()
+						self.setRoot(right_node)
+						right_node.setParent(None)
+						self.setSize(1)
+						self.getRoot().setSize_node(1)
+						self.getRoot().setHeight(0)
 
+						self.start = self.end = self.getRoot()
 					else:
-						parent.setLeft(curr.getLeft())
-				if ( curr.getRight().isRealNode()):
-					if (right):
-						parent.setRight(curr.getRight())
-					else:
-						parent.setLeft(curr.getRight())
-				parent.setSize_node(parent.getSize_node() - 1)
-				parent.setHeight(1 +max( AVLNode.getHeight(parent.getLeft()),AVLNode.getHeight(parent.getRight())))
-				#
-				curr.getLeft().setParent(parent)
+						left_node = self.getRoot().getLeft()
+						self.setRoot(left_node)
+						left_node.setParent(None)
+						self.setSize(1)
+						self.getRoot().setSize_node(1)
+						self.getRoot().setHeight(0)
+				else:
+					right=parent.getRight()==curr
+					if( curr.getLeft().isRealNode()):
+						if(right):
+							curr.getLeft().setParent(parent)
+							parent.setRight(curr.getLeft())
 
-				#
-				curr.setParent(None)
-				curr.setRight(None)
-				curr.setLeft(None)
-				self.fix_the_Hights(parent, False)
-				self.fix_sizes(parent, False)
-				self.setSize(self.getSize() - 1)
-				return (self.fix_the_tree(parent))
-			# if the node that we want to delet have 2 children
+						else:
+							curr.getLeft().setParent(parent)
+							parent.setLeft(curr.getLeft())
+					if ( curr.getRight().isRealNode()):
+						if (right):
+							curr.getRight().setParent(parent)
+							parent.setRight(curr.getRight())
+
+						else:
+							curr.getRight().setParent(parent)
+							parent.setLeft(curr.getRight())
+					parent.setSize_node(parent.getSize_node() - 1)
+					parent.setHeight(1 +max( AVLNode.getHeight(parent.getLeft()),AVLNode.getHeight(parent.getRight())))
+					# #
+					# curr.getLeft().setParent(parent)
+					#
+					# #
+					curr.setParent(None)
+					curr.setRight(None)
+					curr.setLeft(None)
+					self.fix_the_Hights(parent, False)
+					self.fix_sizes(parent, False)
+					self.setSize(self.getSize() - 1)
+					return (self.fix_the_tree(parent,False))
+			# if the node that we want to delete have 2 children
 			else:
 				y=self.successor(curr)      # 		y has no left child
 				left=y.getParent().getLeft()==y
@@ -823,20 +854,31 @@ class AVLTreeList(object):
 
 
 tree1=AVLTreeList()
-for i in range(800):
+# for i in range(100):
+# 	tree1.insert(i,i)
+#
+#
+# for i in range(50):
+# 	tree1.delete(i)
+#
+# for i in range(49,0,-1):
+# 	tree1.delete(i)
+
+for i in range(20):
 	tree1.insert(i,i)
 
-for i in range (400):
+for i in range (10):
 	tree1.delete(i)
 
 
 # هيك بعطي ايرور قال ، بدييي انجننننننننن
-# for i in range(399,0,-1):
-# 	tree1.delete(i)
+for i in range(9,0,-1):
+	tree1.delete(i)
 
 
 
 
+print(tree1)
 
 #
 # print(tree1.delete(5))

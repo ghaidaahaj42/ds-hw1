@@ -361,7 +361,7 @@ class AVLTreeList(object):
 		counter=0
 		y=node.getParent()
 		node_BF = node.getBF()
-		if ((node.getBF() == -2 or node.getBF() == 2) and y==None):
+		if ((node.getBF() == -2 or node.getBF() == 2)):
 			y = node
 		while(y!=None):
 			Bf=y.getBF()
@@ -379,7 +379,7 @@ class AVLTreeList(object):
 				if(node.getBF()==1 or(node.getBF()==0 and not insert)):
 					self.rotateRight(y)  ### have/has changed
 					counter =counter+1
-				if (node.getBF() == -1):
+				elif (node.getBF() == -1):
 					self.rotateLeft(node)
 					self.rotateRight(y)              # not changed
 					counter = counter + 2
@@ -395,7 +395,7 @@ class AVLTreeList(object):
 					self.rotateRight(node)       #have/has changed
 					self.rotateLeft(y)
 					counter = counter + 2
-				if (node.getBF() == -1 or (node.getBF()==0 and not insert)):
+				elif (node.getBF() == -1 or (node.getBF()==0 and not insert)):
 					self.rotateLeft(y)
 					counter = counter + 1
 				y = y.getParent()
@@ -678,6 +678,7 @@ class AVLTreeList(object):
 			# if the node that we want to delete have 2 children
 			else:
 				y=self.successor(curr)      # 		y has no left child
+				y_parent = y.getParent()
 				left=y.getParent().getLeft()==y
 				if(left):
 					y.getParent().setLeft(y.getRight())
@@ -708,9 +709,14 @@ class AVLTreeList(object):
 				y.setHeight(max(y.getLeft().getHeight(),y.getRight().getHeight())+1)
 				# y.getParent().setSize_node(y.getParent().getSize_node() - 1)
 				y.setHeight(1 + max(y.getLeft().getHeight(), y.getRight().getHeight()))
-				self.fix_sizes(y, False)
-				self.fix_the_Hights(y,False)
-				rotation=self.fix_the_tree(y,False)
+				if(y_parent == None):
+					self.fix_sizes(y, False)
+					self.fix_the_Hights(y,False)
+					rotation=self.fix_the_tree(y,False)
+				else:
+					self.fix_sizes(y_parent, False)
+					self.fix_the_Hights(y_parent, False)
+					rotation = self.fix_the_tree(y_parent, False)
 				self.setSize(self.getSize()-1)
 		return rotation
 
@@ -854,28 +860,40 @@ class AVLTreeList(object):
 
 
 tree1=AVLTreeList()
+
+tree1.insert(0,50)
+tree1.insert(0,33)
+tree1.insert(2,53)
+tree1.insert(0,32)
+tree1.insert(3,51)
+tree1.insert(5,54)
+tree1.insert(4,52)
+
+tree1.delete(0)
+
 # for i in range(100):
 # 	tree1.insert(i,i)
-#
-#
+
 # for i in range(50):
 # 	tree1.delete(i)
-#
+
 # for i in range(49,0,-1):
 # 	tree1.delete(i)
 
-for i in range(20):
-	tree1.insert(i,i)
 
-for i in range (10):
-	tree1.delete(i)
+# for i in range(10):
+# 	tree1.insert(i,i)
 
+# for i in range (10):
+# 	tree1.delete(i)
+
+# print(tree1)
 
 # هيك بعطي ايرور قال ، بدييي انجننننننننن
-for i in range(9,0,-1):
-	tree1.delete(i)
+# for i in range(8,0,-1):
+# 	tree1.delete(i)
 
-
+# tree1.delete(15)
 
 
 print(tree1)

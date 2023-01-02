@@ -302,6 +302,7 @@ class AVLTreeList(object):
 
 
 		if(i==self.size):
+			self.end=val
 			maxNode=self.maxNode(current)
 			s.setParent(maxNode)
 			maxNode.setRight(s)
@@ -406,55 +407,6 @@ class AVLTreeList(object):
 
 
 
-	# def calcHieght(self,node):
-	# 	if (not node.isRealNode()): return -1
-	# 	if (not node.getRight().isRealNode()) and (not node.getLeft().isRealNode()):return 0
-	# 	return (1+max(self.calcHieght(node.getLeft()),self.calcHieght(node.getRight())))
-
-
-
-
-	# def fix_the_tree(self,node,insertion):
-	# 	counter=0
-	# 	y=node.getParent()
-	# 	while(y!=None):
-	# 		Bf=y.getBF()
-	# 		if((Bf==1 or Bf==0 or  Bf==-1 ) and AVLNode.getHeight(y.getLeft())==AVLNode.getHeight(y.getRight())):
-	# 			if(insertion):
-	# 				return 0
-	#
-	# 		if((Bf==1 or Bf==0 or Bf==-1) and  AVLNode.getHeight(y.getLeft())!=AVLNode.getHeight(y.getRight())):
-	# 			y=y.getParent()
-	# 			continue
-	#
-	#
-	# 		if(Bf==2):
-	# 			node = y.getLeft()
-	# 			if(node.getBF()==1 or node.getBf()==0):
-	# 				self.rotateRight(y)  ### have/has changed
-	# 				counter =counter+1
-	# 			if (node.getBF() == -1):
-	# 				self.rotateLeft(node)
-	# 				self.rotateRight(y)              # not changed
-	# 				counter = counter + 2
-	# 			y = y.getParent()
-	# 			# node.setHeight(AVLTreeList.fix_the_Hights(self,node))
-	# 			# self.fix_the_Hights(node)
-	# 			return counter
-	# 		if (Bf==-2):
-	# 			node=y.getRight()
-	# 			if(node.getBF()==1):
-	# 				self.rotateRight(node)       #have/has changed
-	# 				self.rotateLeft(y)
-	# 				counter = counter + 2
-	# 			if (node.getBF() == -1 or node.getBf()==0):
-	# 				self.rotateLeft(y)
-	# 				counter = counter + 1
-	# 			y = y.getParent()
-	# 			# node.setHeight(AVLTreeList.fix_the_Hights(self,node))
-	# 			# self.fix_the_Hights(node)
-	# 			# return counter
-	# 	return counter
 
 
 
@@ -593,6 +545,14 @@ class AVLTreeList(object):
 		if(i>=self.size or self.empty()):
 			return -1
 		else:
+			if (self.size == 1 and i==0):
+				self.start=None
+				self.end=None
+			elif(i==0):
+				self.start=self.Tree_Select(1)
+			elif(i==self.size-1):
+				self.end= self.Tree_Select(i)
+
 			curr = self.Tree_Select(i+1)
 			#  check if the node that we want to delete is a leaf
 			if((not curr.getRight().isRealNode()) and (not curr.getLeft().isRealNode())):
@@ -857,66 +817,14 @@ class AVLTreeList(object):
 
 
 
-
-
-tree1=AVLTreeList()
-
-tree1.insert(0,50)
-tree1.insert(0,33)
-tree1.insert(2,53)
-tree1.insert(0,32)
-tree1.insert(3,51)
-tree1.insert(5,54)
-tree1.insert(4,52)
-
-tree1.delete(0)
-
-# for i in range(100):
-# 	tree1.insert(i,i)
-
-# for i in range(50):
-# 	tree1.delete(i)
-
-# for i in range(49,0,-1):
-# 	tree1.delete(i)
-
-
-# for i in range(10):
-# 	tree1.insert(i,i)
-
-# for i in range (10):
-# 	tree1.delete(i)
-
-# print(tree1)
-
-# هيك بعطي ايرور قال ، بدييي انجننننننننن
-# for i in range(8,0,-1):
-# 	tree1.delete(i)
-
-# tree1.delete(15)
-
-
-print(tree1)
-
-#
-# print(tree1.delete(5))
-# print(tree1)
-# print(tree1.delete(5))
-# print(tree1)
-# print(tree1.delete(4))
-# print(tree1)
-# print(tree1.delete(3))
-# print(tree1)
-# print(tree1.delete(3))
-# print(tree1)
-# print(tree1.delete(4))
-# print(tree1)
-# print(tree1.delete(2))
-# print(tree1)
-# print(tree1.delete(1))
-# print(tree1)
-# print(tree1.delete(0))
-# print(tree1)
-# print(tree1.delete(0))
-# print(tree1)
+tree=AVLTreeList()
+x=3000
+y=0
+sum=0
+tree.insert(4,0)
+for i in range (3000):
+	rnd=random.randint(0, y);
+	sum=sum+(tree.insert(rnd,4))
+	y=y+1
+print(sum)
 

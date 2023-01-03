@@ -714,14 +714,17 @@ class AVLTreeList(object):
 		else:
 			return self.listToArray_rec(self.root)
 
-	def listToArray_rec(node):      #O(n)
+	def listToArray_rec(self,node):      #O(n)
 		if (node == None):
 			return []
 		else:
 			arr = []
-			left = AVLTreeList.listToArray_rec(node.getLeft())
-			right = AVLTreeList.listToArray_rec(node.getRight())
-			arr = left + [node.value] + right
+			left = self.listToArray_rec(node.getLeft())
+			right = self.listToArray_rec(node.getRight())
+			if(node.isRealNode()):
+				arr = left + [node.getValue()] + right
+			else:
+				arr=left+right
 			return arr
 
 
@@ -875,7 +878,7 @@ for i in range (1,10):
 tree1.concat(tree)
 # print(tree)
 print(tree1)
-
+print(tree1.listToArray())
 # x=3000
 # y=0
 # sum=0

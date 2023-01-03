@@ -302,7 +302,7 @@ class AVLTreeList(object):
 
 
 		if(i==self.size):
-			self.end=val
+			self.end=s
 			maxNode=self.maxNode(current)
 			s.setParent(maxNode)
 			maxNode.setRight(s)
@@ -561,8 +561,6 @@ class AVLTreeList(object):
 				if(parent == None):
 					self.setSize( 0)
 					self.setRoot(None)
-					# self.SetStart(None)
-					# self.SetEnd(None)
 					return 0
 				# else
 				virtualNode = AVLNode("Virtual")
@@ -695,7 +693,7 @@ class AVLTreeList(object):
 	"""
 	def first(self):      #O(1)
 		if self.empty(): return None
-		return self.start
+		return self.start.getValue()
 	"""returns the value of the last item in the list
 
 	@rtype: str
@@ -703,7 +701,7 @@ class AVLTreeList(object):
 	"""
 	def last(self):      #O(1)
 		if self.empty(): return None
-		return self.end
+		return self.end.getValue()
 
 	"""returns an array representing list 
 
@@ -784,8 +782,53 @@ class AVLTreeList(object):
 	@returns: the absolute value of the difference between the height of the AVL trees joined
 	"""
 	def concat(self, lst):
-		return None
+		if(lst.getRoot().getHeight()>=self.getRoot().getHeight()):
+			x = self.end
+			self.delete(self.size - 1)
+			return self.join(x,lst,True)
+		else:
+			x=lst.start
+			lst.delete(0)
+			return self.join(x, lst, False)
+	def join(self,x,T2,t2IsBigger):
+		h=self.getRoot().getHeight()
+		start=T2.start
+		if(not t2IsBigger):
+			h=T2.getRoot().getHeight()
+			start=self.end
 
+		while(start.getHeight()<h-1):
+			start=start.getParent()
+		if(t2IsBigger):
+			x.setLeft(self.getRoot())
+			self.getRoot().setParent(x)
+			x.setRight(start)
+			start.getParent().setLeft(x)
+			x.setParent(start.getParent())
+			start.setParent(x)
+		else:
+			x.setLeft(start)
+			x.setRight(T2.getRoot())
+			T2.getRoot().setParent(x)
+			start.getParent().setRight(x)
+			x.setParent(start.getParent())
+			start.setParent(x)
+		x.setSize_node(x.getRight().getSize_node()+1+x.getLeft().getSize_node())
+		x.setHeight(1+max(x.getRight().getHeight(),x.getLeft().getHeight()))
+		self.setSize(self.getSize()+T2.getSize()+1)
+		print(x.getValue())
+		self.fix_the_Hights(x,False)
+		print(self)
+		self.fix_the_tree(x,False)
+		self.fix_the_Hights(x,False)
+		self.fix_sizes(x,False)
+		c=x
+		while c.getParent()!=None:
+			c=c.getParent()
+		self.setRoot(c)
+
+		self.end=T2.end
+		return
 	"""searches for a *value* in the list
 
 	@type val: str
@@ -818,13 +861,28 @@ class AVLTreeList(object):
 
 
 tree=AVLTreeList()
-x=3000
-y=0
-sum=0
-tree.insert(4,0)
-for i in range (3000):
-	rnd=random.randint(0, y);
-	sum=sum+(tree.insert(rnd,4))
-	y=y+1
-print(sum)
+tree.insert(0,50000000)
+for i in range (1,5):
+	tree.insert(i,0)
+tree.insert(5,50000000)
 
+tree1=AVLTreeList()
+tree1.insert(0,1000000)
+for i in range (1,10):
+	tree1.insert(i,i)
+
+# tree.concat(tree1)
+tree1.concat(tree)
+# print(tree)
+print(tree1)
+
+# x=3000
+# y=0
+# sum=0
+# tree.insert(4,0)
+# for i in range (3000):
+# 	rnd=random.randint(0, y);
+# 	sum=sum+(tree.insert(rnd,4))
+# 	y=y+1
+# print(sum)
+#

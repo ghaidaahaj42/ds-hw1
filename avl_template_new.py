@@ -268,7 +268,7 @@ class AVLTreeList(object):
 	"""
 	def retrieve(self, i):       #O(log(n))
 		x=self.Tree_Select(i+1)
-		if(not x.isRealNode):
+		if(not x.isRealNode()):
 			return None
 		return x.getValue()
 
@@ -877,8 +877,10 @@ for i in range (1,10):
 # tree.concat(tree1)
 tree1.concat(tree)
 # print(tree)
-print(tree1)
+print(tree1.retrieve(16))
 print(tree1.listToArray())
+for i in range (tree1.size):
+	print(tree1.retrieve(i))
 # x=3000
 # y=0
 # sum=0

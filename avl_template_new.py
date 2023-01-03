@@ -361,7 +361,6 @@ class AVLTreeList(object):
 	def fix_the_tree(self,node,insert=True):
 		counter=0
 		y=node.getParent()
-		node_BF = node.getBF()
 		if ((node.getBF() == -2 or node.getBF() == 2)):
 			y = node
 		while(y!=None):
@@ -800,7 +799,7 @@ class AVLTreeList(object):
 			h=T2.getRoot().getHeight()
 			start=self.end
 
-		while(start.getHeight()<h-1):
+		while(start.getHeight()<h):
 			start=start.getParent()
 		if(t2IsBigger):
 			x.setLeft(self.getRoot())
@@ -819,9 +818,7 @@ class AVLTreeList(object):
 		x.setSize_node(x.getRight().getSize_node()+1+x.getLeft().getSize_node())
 		x.setHeight(1+max(x.getRight().getHeight(),x.getLeft().getHeight()))
 		self.setSize(self.getSize()+T2.getSize()+1)
-		print(x.getValue())
 		self.fix_the_Hights(x,False)
-		print(self)
 		self.fix_the_tree(x,False)
 		self.fix_the_Hights(x,False)
 		self.fix_sizes(x,False)
@@ -871,16 +868,17 @@ tree.insert(5,50000000)
 
 tree1=AVLTreeList()
 tree1.insert(0,1000000)
-for i in range (1,10):
+for i in range (1,16):
 	tree1.insert(i,i)
 
 # tree.concat(tree1)
+# tree1.concat(tree)
+print(tree)
+print(tree1)
 tree1.concat(tree)
-# print(tree)
-print(tree1.retrieve(16))
-print(tree1.listToArray())
-for i in range (tree1.size):
-	print(tree1.retrieve(i))
+print(tree1)
+# for i in range (tree1.size):
+# 	print(tree1.retrieve(i))
 # x=3000
 # y=0
 # sum=0

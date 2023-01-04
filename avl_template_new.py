@@ -406,7 +406,7 @@ class AVLTreeList(object):
 				continue
 			if(Bf==2):
 				node = y.getLeft()
-				if(node.getBF()==1 or(node.getBF()==0 and not insert)):
+				if(node.getBF()==1 or (node.getBF()==0 and not insert)):
 					self.rotateRight(y)  ### have/has changed
 					counter =counter+1
 				elif (node.getBF() == -1):
@@ -428,6 +428,8 @@ class AVLTreeList(object):
 				elif (node.getBF() == -1 or (node.getBF()==0 and not insert)):
 					self.rotateLeft(y)
 					counter = counter + 1
+					if(insert):
+						return counter
 				y = y.getParent()
 				# node.setHeight(AVLTreeList.fix_the_Hights(self,node))
 				# self.fix_the_Hights(node)
@@ -580,9 +582,9 @@ class AVLTreeList(object):
 				self.end=None
 
 			elif(i==0):
-				self.start=self.Tree_Select(1)
+				self.start=self.Tree_Select(2)
 			elif(i==self.size-1):
-				self.end= self.Tree_Select(i)
+				self.end= self.Tree_Select(i+1)
 
 			curr = self.Tree_Select(i+1)
 			#  check if the node that we want to delete is a leaf
@@ -615,7 +617,7 @@ class AVLTreeList(object):
 
 			# 	check if the node that we want to delete has one child
 			parent = curr.getParent()
-			if((not curr.getRight().isRealNode() and curr.getLeft().isRealNode()) or (not curr.getLeft().isRealNode() and curr.getLeft().isRealNode())):
+			if((not curr.getRight().isRealNode() and curr.getLeft().isRealNode()) or (not curr.getLeft().isRealNode() and curr.getRight().isRealNode())):
 				if(parent == None):
 					if(self.getRoot().getRight().isRealNode()):
 						right_node = self.getRoot().getRight()
@@ -668,11 +670,14 @@ class AVLTreeList(object):
 			else:
 				y=self.successor(curr)      # 		y has no left child
 				y_parent = y.getParent()
+				y_grandfather = y_parent.getParent()
 				left=y.getParent().getLeft()==y
 				if(left):
 					y.getParent().setLeft(y.getRight())
 				else:
 					y.getParent().setRight(y.getRight())
+				if (curr == self.getRoot()):
+					self.setRoot(y)
 				y.getRight().setParent(y.getParent())
 				y.getParent().setSize_node(y.getParent().getSize_node() - 1)
 				y.getParent().setHeight(1 + max(y.getParent().getLeft().getHeight(), y.getParent().getRight().getHeight()))
@@ -684,8 +689,6 @@ class AVLTreeList(object):
 				y.setLeft(curr.getLeft())
 				curr.getLeft().setParent(y)
 				curr.getRight().setParent(y)
-				if(curr==self.getRoot()):
-					self.setRoot(y)
 				if (right):
 					AVLNode.setRight(parent,y)
 				else:
@@ -698,10 +701,14 @@ class AVLTreeList(object):
 				y.setHeight(max(y.getLeft().getHeight(),y.getRight().getHeight())+1)
 				# y.getParent().setSize_node(y.getParent().getSize_node() - 1)
 				y.setHeight(1 + max(y.getLeft().getHeight(), y.getRight().getHeight()))
-
-				self.fix_sizes(y, False)
-				self.fix_the_Hights(y,False)
-				rotation=self.fix_the_tree(y,False)
+				if(y_grandfather == None):
+					self.fix_sizes(self.getRoot(), False)
+					self.fix_the_Hights(self.getRoot(), False)
+					rotation = self.fix_the_tree(self.getRoot(), False)
+				else:
+					self.fix_sizes(y_parent, False)
+					self.fix_the_Hights(y_parent,False)
+					rotation=self.fix_the_tree(y_parent,False)
 
 		return rotation
 
@@ -813,7 +820,7 @@ class AVLTreeList(object):
 	@rtype: list
 	@returns: an AVLTreeList where the values are permuted randomly by the info of the original list. ##Use Randomness
 	"""
-	def permutation(self):   #O(n)
+	def permutation(self):   #O(nlogn)
 		arr = self.listToArray()
 		result = []
 		while(len(arr)!=0):
@@ -928,13 +935,41 @@ class AVLTreeList(object):
 		return self.root
 
 
-T = AVLTreeList()
-T.append(40)
 
-for i in range(52):
-	if (i % 3 != 2):
-		T.insert((i * 17) % T.length(), i)
-	else:
-		T.delete((i * 17) % T.length())
 
-print(T.listToArray()==[48, 46, 24, 51, 28, 12, 49, 30, 40, 39, 34, 42, 13, 43, 33, 45, 27, 37, 40])
+# tree = AVLTreeList()
+# sum = 0
+# for i in range(1000):
+# 	sum += tree.insert(i%0,i)
+#
+# print(sum)
+
+# print(tree)
+
+
+# x=3000
+# y=0
+# sum=0
+# tree.insert(4,0)
+# for i in range (20):
+# 	rnd=random.randint(0, y);
+# 	rnd = rnd % 5
+# 	sum=sum+(tree.insert(rnd,4))
+# 	y=y+1
+# print(sum)
+
+# print(tree.getRoot().getSize_node())
+
+
+
+# T = AVLTreeList()
+# T.append(40)
+
+
+# for i in range(52):
+# 	if (i % 3 != 2):
+# 		T.insert((i * 17) % T.length(), i)
+# 	else:
+# 		T.delete((i * 17) % T.length())
+#
+# print(T.listToArray()==[48, 46, 24, 51, 28, 12, 49, 30, 40, 39, 34, 42, 13, 43, 33, 45, 27, 37, 40])

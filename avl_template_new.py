@@ -487,6 +487,7 @@ class AVLTreeList(object):
 				return Tree_Select_rec(node.getLeft(),k)
 			else:
 				return Tree_Select_rec(node.getRight(),k-r)
+
 		return Tree_Select_rec(self.root, k)
 
 	"""predecessor and successor
@@ -747,12 +748,37 @@ class AVLTreeList(object):
 	def sort(self): #O(n)
 		if self.empty(): return  None
 		arr= self.listToArray()
-		arr.sort()
+		self.QuickSort(arr,0,len(arr)-1)
 		i=0
 		sorted_tree=AVLTreeList()
 		for i in range(len(arr)):
 			sorted_tree.insert(i,arr[i])
 		return sorted_tree
+
+
+	def QuickSort(self,arr,l,h):
+		def partition(arr, l, h):
+			pivot = arr[h]
+			i = l - 1
+			for j in range(l, h):
+				if arr[j] <= pivot:
+					i = i + 1
+					current=arr[i]
+					arr[i]=arr[j]
+					arr[j]=current
+			current=arr[i + 1]
+			arr[i+1]=arr[h]
+			arr[h]=current
+			return i + 1
+
+		if l < h:
+			pivot = partition(arr, l, h)
+			self.QuickSort(arr, l, pivot - 1)
+			self.QuickSort(arr, pivot + 1, h)
+
+
+
+
 
 
 	"""permute the info values of the list 
@@ -784,13 +810,13 @@ class AVLTreeList(object):
 	@returns: the absolute value of the difference between the height of the AVL trees joined
 	"""
 	def concat(self, lst):
+		x = self.end
+		self.delete(self.size - 1)
 		if(lst.getRoot().getHeight()>=self.getRoot().getHeight()):
-			x = self.end
-			self.delete(self.size - 1)
 			return self.join(x,lst,True)
 		else:
-			x=lst.start
-			lst.delete(0)
+			# x=lst.start
+			# lst.delete(0)
 			return self.join(x, lst, False)
 	def join(self,x,T2,t2IsBigger):
 		h=self.getRoot().getHeight()
@@ -861,7 +887,7 @@ class AVLTreeList(object):
 
 
 tree=AVLTreeList()
-tree.insert(0,50000000)
+tree.insert(0,4000)
 for i in range (1,5):
 	tree.insert(i,0)
 tree.insert(5,50000000)
@@ -871,12 +897,15 @@ tree1.insert(0,1000000)
 for i in range (1,16):
 	tree1.insert(i,i)
 
+
+x=tree1.sort()
+print(x)
+
 # tree.concat(tree1)
 # tree1.concat(tree)
-print(tree)
-print(tree1)
-tree1.concat(tree)
-print(tree1)
+
+# tree1.concat(tree)
+# print(tree1)
 # for i in range (tree1.size):
 # 	print(tree1.retrieve(i))
 # x=3000

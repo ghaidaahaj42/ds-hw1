@@ -244,7 +244,7 @@ class AVLTreeList(object):
 
 
 	"""
-	Constructor, you are allowed to add more fields.  
+	Constructor, you are allowed to add more fields.
 
 	"""
 	def __init__(self):
@@ -384,6 +384,7 @@ class AVLTreeList(object):
 		while(parent!=None):
 			parent.setSize_node(parent.getLeft().getSize_node()+1+parent.getRight().getSize_node())
 			parent=parent.getParent()
+		self.setSize(self.getRoot().getSize_node())
 
 	def fix_the_tree(self,node,insert=True):
 		counter=0
@@ -577,6 +578,7 @@ class AVLTreeList(object):
 			if (self.size == 1 and i==0):
 				self.start=None
 				self.end=None
+
 			elif(i==0):
 				self.start=self.Tree_Select(1)
 			elif(i==self.size-1):
@@ -608,7 +610,7 @@ class AVLTreeList(object):
 
 				self.fix_the_Hights(virtualNode,False)
 				self.fix_sizes(virtualNode,False)
-				self.setSize(self.getSize() - 1)
+				# self.setSize(self.getSize() - 1)
 				return ( self.fix_the_tree(virtualNode,False))
 
 			# 	check if the node that we want to delete has one child
@@ -660,7 +662,7 @@ class AVLTreeList(object):
 					curr.setLeft(None)
 					self.fix_the_Hights(parent, False)
 					self.fix_sizes(parent, False)
-					self.setSize(self.getSize() - 1)
+					# self.setSize(self.getSize() - 1)
 					return (self.fix_the_tree(parent,False))
 			# if the node that we want to delete have 2 children
 			else:
@@ -696,15 +698,11 @@ class AVLTreeList(object):
 				y.setHeight(max(y.getLeft().getHeight(),y.getRight().getHeight())+1)
 				# y.getParent().setSize_node(y.getParent().getSize_node() - 1)
 				y.setHeight(1 + max(y.getLeft().getHeight(), y.getRight().getHeight()))
-				if(y_parent == None):
-					self.fix_sizes(y, False)
-					self.fix_the_Hights(y,False)
-					rotation=self.fix_the_tree(y,False)
-				else:
-					self.fix_sizes(y_parent, False)
-					self.fix_the_Hights(y_parent, False)
-					rotation = self.fix_the_tree(y_parent, False)
-				self.setSize(self.getSize()-1)
+
+				self.fix_sizes(y, False)
+				self.fix_the_Hights(y,False)
+				rotation=self.fix_the_tree(y,False)
+
 		return rotation
 
 
@@ -892,7 +890,7 @@ class AVLTreeList(object):
 			start.setParent(x)
 		x.setSize_node(x.getRight().getSize_node()+1+x.getLeft().getSize_node())
 		x.setHeight(1+max(x.getRight().getHeight(),x.getLeft().getHeight()))
-		self.setSize(self.getSize()+T2.getSize()+1)
+		# self.setSize(self.getSize()+T2.getSize()+1)
 		self.fix_the_Hights(x,False)
 		self.fix_the_tree(x,False)
 		self.fix_the_Hights(x,False)
@@ -931,77 +929,12 @@ class AVLTreeList(object):
 
 
 T = AVLTreeList()
+T.append(40)
 
-# for i in range(500):
-# 	if i % 3 == 0:
-# 		T.insert(T.length() // 2, i)
-# 	elif i % 3 == 1:
-# 		T.insert(0, i)
-# 	else:
-# 		T.delete(T.length() // 2)
-#
-# left = T.getRoot().getLeft().getHeight()
-# right = T.getRoot().getRight().getHeight()
-#
-# BF = left-right
-#
-# print(left)
-# print(right)
-# print(BF)
-#
-# print(T)
-
-for i in range(14):
-	T.insert(0, i)
-
-for i in range(6):
-	if i % 5 == 0:
-		T.delete(0)
-	elif i % 5 == 1:
-		T.delete(T.length() - 1)
-	elif i % 5 == 2:
-		T.delete((T.length() - 1) // 2)
-	elif i % 5 == 3:
-		T.delete((T.length() - 1) // 3)
+for i in range(52):
+	if (i % 3 != 2):
+		T.insert((i * 17) % T.length(), i)
 	else:
-		T.delete((T.length() - 1) // 7)
+		T.delete((i * 17) % T.length())
 
-print(T.length())
-T.delete(T.length() - 1)
-T.delete(7)
-print(T.length())
-print(T)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# LR3 = LR1 + LR2
-
-# tree.concat(tree1)
-# tree1.concat(tree)
-
-# tree1.concat(tree)
-# print(tree1)
-# for i in range (tree1.size):
-# 	print(tree1.retrieve(i))
-# x=3000
-# y=0
-# sum=0
-# tree.insert(4,0)
-# for i in range (3000):
-# 	rnd=random.randint(0, y);
-# 	sum=sum+(tree.insert(rnd,4))
-# 	y=y+1
-# print(sum)
-#
+print(T.listToArray()==[48, 46, 24, 51, 28, 12, 49, 30, 40, 39, 34, 42, 13, 43, 33, 45, 27, 37, 40])

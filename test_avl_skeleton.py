@@ -1268,7 +1268,7 @@ class testAVLList(unittest.TestCase):
     #     T = AVLTreeList()
     #     T.append(0)
     #     T.append(1)
-
+    #
     #     self.assertEqual(T.getSuccessorOf(T.getRoot()).getValue(), 1)
     #     self.assertEqual(T.getSuccessorOf(
     #         T.getRoot().getRight()), None)

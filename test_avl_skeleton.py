@@ -1,4 +1,4 @@
-from avl_template_new import AVLTreeList
+from AVLTreeList import AVLTreeList
 import unittest
 
 

@@ -286,7 +286,7 @@ class AVLTreeList(object):
 	"""
 	def retrieve(self, i):       #O(log(n))
 		x=self.Tree_Select(i+1)
-		if(not x.isRealNode()):
+		if(x is None):
 			return None
 		return x.getValue()
 
@@ -308,7 +308,9 @@ class AVLTreeList(object):
 		virtualNode_right.virtual_node()
 		virtualNode_left.virtual_node()
 		s.setLeft(virtualNode_left)
+		virtualNode_left.setParent(s)
 		s.setRight(virtualNode_right)
+		virtualNode_right.setParent(s)
 		if(self.root==None):
 			self.root=s
 			self.setSize(1)
@@ -510,6 +512,8 @@ class AVLTreeList(object):
 	Tree_Select return the k-th element in the tree
 	"""
 	def Tree_Select(self,k):     #O(log(n))
+		if (self.empty()):
+			return None
 		def Tree_Select_rec(node, k):
 			x = node
 			r = AVLNode.getSize_node(x.getLeft()) + 1
@@ -584,7 +588,7 @@ class AVLTreeList(object):
 			elif(i==0):
 				self.start=self.Tree_Select(2)
 			elif(i==self.size-1):
-				self.end= self.Tree_Select(i+1)
+				self.end= self.Tree_Select(i)
 
 			curr = self.Tree_Select(i+1)
 			#  check if the node that we want to delete is a leaf
@@ -670,7 +674,7 @@ class AVLTreeList(object):
 			else:
 				y=self.successor(curr)      # 		y has no left child
 				y_parent = y.getParent()
-				y_grandfather = y_parent.getParent()
+				succ_IS_son = (y.getParent() == curr)
 				left=y.getParent().getLeft()==y
 				if(left):
 					y.getParent().setLeft(y.getRight())
@@ -701,10 +705,10 @@ class AVLTreeList(object):
 				y.setHeight(max(y.getLeft().getHeight(),y.getRight().getHeight())+1)
 				# y.getParent().setSize_node(y.getParent().getSize_node() - 1)
 				y.setHeight(1 + max(y.getLeft().getHeight(), y.getRight().getHeight()))
-				if(y_grandfather == None):
-					self.fix_sizes(self.getRoot(), False)
-					self.fix_the_Hights(self.getRoot(), False)
-					rotation = self.fix_the_tree(self.getRoot(), False)
+				if(succ_IS_son):
+					self.fix_sizes(y, False)
+					self.fix_the_Hights(y, False)
+					rotation = self.fix_the_tree(y, False)
 				else:
 					self.fix_sizes(y_parent, False)
 					self.fix_the_Hights(y_parent,False)
@@ -844,19 +848,27 @@ class AVLTreeList(object):
 	@returns: the absolute value of the difference between the height of the AVL trees joined
 	"""
 	def concat(self, lst):
+		if(self.empty() and lst.empty()):
+			return 0
 		if (self.empty()):
 			self.setSize(lst.getSize())
 			self.setRoot(lst.getRoot())
 			self.first = lst.first
 			self.end = lst.end
-			return lst.getRoot().getHeight()
+			return (lst.getRoot().getHeight()+1)
 		if (lst.empty()):
-			return self.getRoot().getHeight()
+			return (self.getRoot().getHeight()+1)
 
 		x = self.end
 		self.delete(self.size - 1)
-		lst_height = lst.getRoot().getHeight();
-		self_height = self.getRoot().getHeight();
+		if(lst.empty()):
+			lst_height=0
+		else:
+			lst_height = lst.getRoot().getHeight()
+		if(self.empty()):
+			self_height =0
+		else:
+			self_height = self.getRoot().getHeight();
 		if(lst_height>=self_height):
 			self.join(x,lst,True)
 
@@ -867,11 +879,30 @@ class AVLTreeList(object):
 
 		return abs(lst_height-self_height)
 	def join(self,x,T2,t2IsBigger):
+		Virtual_self = AVLNode("virtual")
+		Virtual_self.virtual_node()
+		Virtual_T2 = AVLNode("virtual")
+		Virtual_T2.virtual_node()
+		if(self.empty()):
+			# h= Virtual_self.getHeight()
+			self.setSize(0)
+			self.setRoot(Virtual_self)
+			self.start = x
 		h=self.getRoot().getHeight()
-		start=T2.start
+
+		if (T2.empty()):
+			# start = Virtual_T2
+			T2.setSize(0)
+			T2.setRoot(Virtual_T2)
+			T2.end = Virtual_T2
+		start = T2.start
+
 		if(not t2IsBigger):
-			h=T2.getRoot().getHeight()
-			start=self.end
+			if(T2.empty()):
+				h=start.getHeight()
+			else:
+				h=T2.getRoot().getHeight()
+				start=self.end
 
 		while(start.getHeight()<h and start.getParent() !=None):
 			start=start.getParent()
@@ -907,6 +938,7 @@ class AVLTreeList(object):
 			c=c.getParent()
 		self.setRoot(c)
 		self.end=T2.end
+		self.setSize(self.getRoot().getSize_node())
 		return
 	"""searches for a *value* in the list
 
@@ -935,6 +967,35 @@ class AVLTreeList(object):
 		return self.root
 
 
+# T = AVLTreeList()
+# L = []
+# j = 0
+# for i in range(100):
+# 	T.append(i)
+# 	L.append(i)
+#
+# for i in range(21):
+# 	T.delete(T.length() // 2)
+#
+# T.delete((T.length() // 2))
+# print (T)
+# T.delete(T.length() // 2)
+# while(not T.empty()):
+# 	print(j)
+# 	j+=1
+#
+# 	print("This is the Node Value: " + str(T.retrieve((T.length() // 2))))
+# 	T.delete(T.length() // 2)
+
+# emptyList = AVLTreeList()
+# twentyTree = AVLTreeList()
+# twentylist = []
+#
+# for i in range(20):
+# 	twentylist.append(i)
+# 	twentyTree.append(i)
+#
+# print(twentylist)
 
 
 # tree = AVLTreeList()
@@ -962,8 +1023,7 @@ class AVLTreeList(object):
 
 
 
-# T = AVLTreeList()
-# T.append(40)
+
 
 
 # for i in range(52):
